@@ -1,0 +1,87 @@
+name: Cypress Tests - ServeRest
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  cypress-api:
+    name: API Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar testes de API (headless)
+        run: npm run test:api
+
+      - name: Upload dos relatórios de API
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-api
+          path: |
+            cypress/reports/
+            cypress/screenshots/
+
+  cypress-web:
+    name: E2E (Frontend) Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar testes E2E (headless)
+        run: npm run test:web
+
+      - name: Upload dos relatórios e evidências E2E
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-e2e
+          path: |
+            cypress/reports/
+            cypress/screenshots/
+            cypress/videos/
+
+  lint:
+    name: ESLint & Prettier Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar padronização (ESLint)
+        run: npx eslint cypress --ext .js
+
+      - name: Verificar formatação (Prettier)
+        run: npx prettier --check "cypress/**/*.js" "*.{js,json}"
