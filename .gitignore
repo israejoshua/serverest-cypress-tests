@@ -1,6 +1,5 @@
 # Dependências
 node_modules/
-package-lock.json
 
 # Relatórios, evidências e artefatos de execução
 cypress/reports/
