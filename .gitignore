@@ -1,0 +1,23 @@
+# Dependências
+node_modules/
+package-lock.json
+
+# Relatórios, evidências e artefatos de execução
+cypress/reports/
+cypress/screenshots/*
+!cypress/screenshots/.gitkeep
+cypress/videos/*
+!cypress/videos/.gitkeep
+cypress/downloads/
+mochawesome-*.json
+mochawesome.html
+
+# Logs e arquivos de sistema
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Variáveis de ambiente
+.env
+.env.local
