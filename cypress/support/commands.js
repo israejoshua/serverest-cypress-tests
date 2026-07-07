@@ -1,18 +1,14 @@
-// ***********************************************
 // Comandos customizados do Cypress.
 // Centraliza chamadas de API (preparo/limpeza de massa) e ações de UI,
 // evitando duplicação de código entre os testes de API e E2E.
-// ***********************************************
 
 import { criarUsuario, criarProduto } from './factories';
 
 const apiBaseUrl = () => Cypress.env('apiBaseUrl') || 'https://serverest.dev';
 
-// ---------------------------------------------------------------------------
-// API — Usuários
-// ---------------------------------------------------------------------------
+// ===== Usuários =====
 
-/** Cria um usuário via API e retorna o response (status 201 + _id). */
+// Cria um usuário via API e retorna o response (status 201 + _id).
 Cypress.Commands.add('apiCreateUser', (usuario = criarUsuario()) => {
   // Envia um payload limpo (sem _id) para não poluir a requisição em re-POSTs
   const payload = {
@@ -29,12 +25,11 @@ Cypress.Commands.add('apiCreateUser', (usuario = criarUsuario()) => {
       failOnStatusCode: false,
     })
     .then((response) => {
-      // Disponibiliza o _id retornado para limpeza/conferência
       return cy.wrap({ response, usuario, _id: response.body?._id });
     });
 });
 
-/** Remove um usuário via API pelo id (limpeza). */
+// Remove um usuário via API pelo id (limpeza).
 Cypress.Commands.add('apiDeleteUser', (userId) => {
   if (!userId) return cy.wrap(null);
   return cy.request({
@@ -44,7 +39,7 @@ Cypress.Commands.add('apiDeleteUser', (userId) => {
   });
 });
 
-/** Consulta um usuário via API pelo id. */
+// Consulta um usuário via API pelo id.
 Cypress.Commands.add('apiGetUser', (userId) => {
   return cy.request({
     method: 'GET',
@@ -53,11 +48,9 @@ Cypress.Commands.add('apiGetUser', (userId) => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// API — Autenticação
-// ---------------------------------------------------------------------------
+// ===== Autenticação =====
 
-/** Realiza login via API e retorna o response. */
+// Realiza login via API e retorna o response.
 Cypress.Commands.add('apiLogin', (email, password) => {
   return cy.request({
     method: 'POST',
@@ -67,11 +60,9 @@ Cypress.Commands.add('apiLogin', (email, password) => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// API — Produtos
-// ---------------------------------------------------------------------------
+// ===== Produtos =====
 
-/** Cria um produto via API usando o token de admin e retorna o response. */
+// Cria um produto via API usando o token de admin e retorna o response.
 Cypress.Commands.add('apiCreateProduct', (token, produto = criarProduto()) => {
   const payload = {
     nome: produto.nome,
@@ -92,7 +83,7 @@ Cypress.Commands.add('apiCreateProduct', (token, produto = criarProduto()) => {
     });
 });
 
-/** Remove um produto via API (limpeza). */
+// Remove um produto via API (limpeza).
 Cypress.Commands.add('apiDeleteProduct', (token, productId) => {
   if (!productId) return cy.wrap(null);
   return cy.request({
@@ -103,15 +94,9 @@ Cypress.Commands.add('apiDeleteProduct', (token, productId) => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// UI — Autenticação e navegação
-// ---------------------------------------------------------------------------
+// ===== UI =====
 
-/**
- * Faz login via UI (fluxo real do frontend).
- * @param {string} email
- * @param {string} password
- */
+// Faz login via UI (fluxo real do frontend).
 Cypress.Commands.add('loginViaUi', (email, password) => {
   cy.visit('/login');
   cy.get('[data-testid="email"]').clear();
@@ -121,21 +106,15 @@ Cypress.Commands.add('loginViaUi', (email, password) => {
   cy.get('[data-testid="entrar"]').click();
 });
 
-/**
- * Faz login via API e injeta o token no localStorage, deixando a aplicação
- * autenticada sem passar pelo formulário (mais rápido para testes de UI).
- * O token é gravado em window.localStorage (via cy.window) ANTES do reload,
- * usando a mesma chave lida pelo frontend do ServeRest.
- * @param {string} email
- * @param {string} password
- */
+// Faz login via API e injeta o token no localStorage, deixando a aplicação
+// autenticada sem passar pelo formulário (mais rápido para testes de UI).
+// Usa as mesmas chaves lidas pelo frontend do ServeRest.
 Cypress.Commands.add('loginViaApi', (email, password) => {
   cy.apiLogin(email, password).then((response) => {
     expect(response.status, 'login via API').to.eq(200);
     const token = response.body.authorization;
     cy.visit('/');
     cy.window().then((win) => {
-      // Chaves lidas pelo frontend do ServeRest (valores em texto puro)
       win.localStorage.setItem('serverest/userToken', token);
       win.localStorage.setItem('serverest/userEmail', email);
     });
@@ -143,16 +122,10 @@ Cypress.Commands.add('loginViaApi', (email, password) => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Utilitários — mensagens de feedback da UI
-// ---------------------------------------------------------------------------
+// ===== Feedback da UI =====
 
-/**
- * Valida que o frontend exibiu uma mensagem de feedback (div.alert do
- * Bootstrap renderizada no DOM, não window.alert) contendo o texto esperado.
- *
- * @param {string} texto Mensagem esperada (parcial ou completa).
- */
+// Valida que o frontend exibiu uma mensagem de feedback (div.alert do
+// Bootstrap renderizada no DOM) contendo o texto esperado.
 Cypress.Commands.add('validarMensagemDeFeedback', (texto) => {
   cy.contains('.alert', texto).should('be.visible');
 });

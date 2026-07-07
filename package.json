@@ -9,7 +9,7 @@
     "serverest",
     "qa"
   ],
-  "author": "QA Engineer",
+  "author": "Israel Joshua",
   "license": "MIT",
   "scripts": {
     "test": "cypress run",

@@ -1,7 +1,5 @@
-// ***********************************************
 // Factories de massa de dados dinâmica.
-// Gera dados únicos a cada execução para evitar duplicidade/dados instáveis.
-// ***********************************************
+// Gera dados únicos a cada execução para evitar duplicidade e dados instáveis.
 
 import { faker } from '@faker-js/faker';
 
