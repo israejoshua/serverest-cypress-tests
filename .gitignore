@@ -3,13 +3,17 @@ node_modules/
 
 # Relatórios, evidências e artefatos de execução
 cypress/reports/
-cypress/screenshots/*
-!cypress/screenshots/.gitkeep
-cypress/videos/*
-!cypress/videos/.gitkeep
 cypress/downloads/
 mochawesome-*.json
 mochawesome.html
+
+# Screenshots: ignora o conteúdo, mantém a pasta via .gitkeep
+cypress/screenshots/*
+!cypress/screenshots/.gitkeep
+
+# Vídeos: ignora o conteúdo, mantém a pasta via .gitkeep
+cypress/videos/*
+!cypress/videos/.gitkeep
 
 # Logs e arquivos de sistema
 *.log
